@@ -47,16 +47,45 @@ $$
 实际使用的策略 $\sigma$ 替换成策略 s，新策略 s 比原策略多产生的那部分收益，即遗憾值。
 
 ## CFR
-<!-- $$
-\left\{\begin{array}{ll}{50 \frac{\partial u}{\partial t}=\frac{\partial^{2} u}{\partial x^{2}}+2 e^{\frac{t}{50}} \sin (1-x),} & {(x, t) \in \Omega_{T}} \\ {u(x, 0)=\sin (1-x),} & {0 \leq x \leq 1} \\ {u_{x}^{\prime}(0, t)=u(0, t)-e^{\frac{t}{50}}(\sin (1)+\cos (1)),} & {0<t \leq T} \\ {u(1, t)=0,} & {0<t \leq T}\end{array}\right.
-$$ -->
 
+假设在第 $t$ 次迭代中，各参与者的行为策略 $\sigma^t$ 已经给定。一次CFR迭代的计算流程包括以下几步：
+
+计算本次迭代的regret：
 $$
-\sigma^t_p (I, a) = \left\{\begin{array}{ll}
-    R^t(I, a)^+ / \sum_{h \in A(I)} R^t(I, b)^+, & \sum_{b \in A(I)} R^t(I, b)^+ > 0 \\
-    \frac{1}{|A(I)|}, & \text{otherwise}
-\end{array} \right.
+r_t(I,a)=\sum_{h \in I} \pi^{\sigma^t}_p (h)[u^{\sigma^t}(h,a)−u^{\sigma^t}(h)]. 
+$$
+在实际计算中，通常通过深度优先搜索（DFS）加递归的方式遍历所有 $h$ 并更新 $r_t(I,a)$：
+$$
+r_t(I(h),a) \leftarrow r_t(I(h),a) + \pi^{\sigma^t}_{-p} [u^{\sigma^t}(h,a)−u^{\sigma^t}(h)].
+$$
+这种计算方式的好处是，可以在前向传播（即 $h+a \to h′$）的过程中迭代计算概率 $\pi^{\sigma^t}_{-p}(h)$，在后向传播（即 $h' \to (h,a)$）的过程中迭代计算 $u(h)$ 和 $r(I,a)$ ，这样通过一次DFS就能完成全部计算，节省计算量。
+更新累计regret：
+$$R_t(I,a)=R_{t−1}(I,a)+r_t(I,a).$$
+根据累计regret做regret matching，产生下一次迭代的行为策略：
+$$\sigma^{t+1}_p(I,a) = \frac{R_t^+(I, a)}{\sum_a R_t^+(I, a)},$$
+其中 $R^+_t(I,a) = \max(R_t(I,a),0)$.
+在完成整个（多步）CFR迭代流程后，我们进一步对此前各步策略取平均（average policy），作为最终产出的策略形式：
+$$
+\bar{\sigma}^T (I, a) = \frac{\sum_{t \leq T} \sum_{h \in I} \pi_p^{\sigma^t}(h) \cdot \sigma^t_p(I, a)}{\sum_{t \leq T} \sum_{h \in I} \pi_p^{\sigma^t}(h)}
 $$
 
+在实际计算中，为了简化计算量，在迭代过程中我们通常只维护上述表达式中的分子部分 $\sigma^T(I,a)$；当需要用到策略 $\bar{\sigma}^T$ 时，我们只需要进行一步归一化即可：$\bar{\sigma}^{T}(I,a)= \frac{\tilde{\sigma}^T(I,a)}{\sum_{a \in \mathcal{A}} \tilde{\sigma}^T(I,a)}$。
+而 $\tilde{\sigma}^T(I,a)$ 同样可以通过迭代的方式进行更新：具体来说，在上面的单步 CFR 迭代流程中，在第1步遍历h计算当次迭代的 regret 时，我们同时计算平均策略的变动量
 $$
-\bar{\sigma_p}^t(I, a) = \frac{1}{t} \sum_{t'=1}^t \pi_p^{}
+\Delta \tilde{\sigma}^t(I,a) \leftarrow \Delta \tilde{\sigma}^t(I,a) + \pi_p^{\sigma^t}(h) \cdot \sigma^t_p(I, a);
+$$
+然后在第2步更新累计regret时，我们同时更新平均策略
+$$
+\tilde{\sigma}^t(I, a)= \tilde{\sigma}^{t-1}(I, a)+ \Delta \tilde{\sigma}^t(I, a).
+$$
+在这一小节的最后，我们简单地分析CFR这一算法的计算复杂度。首先，在第1步的计算中，需要遍历所有h的所有动作选项a，因此时间复杂度是O(|H|⋅|A|)；而空间复杂度则是O(|I|⋅|A|)。而在第2和第3步的计算中，时间和空间复杂度都是O(|I|⋅|A|)。因此，算法的整体时间复杂度是O(|H|⋅|A|⋅T)，空间复杂度是O(|I|⋅|A|⋅T)，其中T是算法的迭代步数。可以看出，当问题的状态空间H和可观测空间I很大时，算法在计算上是不太可行的。
+
+## Replicator Dynamics
+
+
+
+
+
+
+
+[1] https://hanqiu92.github.io/blogs/2021/CFR_202103/
