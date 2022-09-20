@@ -52,11 +52,11 @@ $$
 
 计算本次迭代的regret：
 $$
-r_t(I,a)=\sum_{h \in I} \pi^{\sigma^t}_p (h)[u^{\sigma^t}(h,a)−u^{\sigma^t}(h)]. 
+R_t(I,a)=\sum_{h \in I} \pi^{\sigma^t}_p (h)[u^{\sigma^t}(h,a)−u^{\sigma^t}(h)]. 
 $$
 在实际计算中，通常通过深度优先搜索（DFS）加递归的方式遍历所有 $h$ 并更新 $r_t(I,a)$：
 $$
-r_t(I(h),a) \leftarrow r_t(I(h),a) + \pi^{\sigma^t}_{-p} [u^{\sigma^t}(h,a)−u^{\sigma^t}(h)].
+R_t(I(h),a) \leftarrow R_t(I(h),a) + \pi^{\sigma^t}_{-p} [u^{\sigma^t}(h\cdot a)−u^{\sigma^t}(h)].
 $$
 这种计算方式的好处是，可以在前向传播（即 $h+a \to h′$）的过程中迭代计算概率 $\pi^{\sigma^t}_{-p}(h)$，在后向传播（即 $h' \to (h,a)$）的过程中迭代计算 $u(h)$ 和 $r(I,a)$ ，这样通过一次DFS就能完成全部计算，节省计算量。
 更新累计regret：
