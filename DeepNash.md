@@ -1,5 +1,8 @@
 # DeepNash
 
+
+
+
 ## Notion
 
 ### 拓展式博弈 G 七元组 $< \mathcal{H}, \mathcal{Z}, \mathcal{P}, p, u, \mathcal{I}, \sigma_c >$
@@ -45,6 +48,27 @@ $$
 R^T(s) = \sum_{t} s(t) v^t - \sum_t \sigma^t v^t
 $$
 实际使用的策略 $\sigma$ 替换成策略 s，新策略 s 比原策略多产生的那部分收益，即遗憾值。
+
+
+## Policy Gradient $\to$ FoReL
+
+Policy Gradient 的优化目标 
+$$\argmax_{\bar{\pi}^i} \mathbb{E} (V^i) - \phi(\bar{\pi}^i)$$
+
+其中 
+$$\mathbb{E} (V^i) 
+= \sum_{a \in \mathcal{A}, h \in \mathcal{H}} Q^i(h, a) \bar{\pi}^i (a | h) \rho^{\bar{\pi}^i, \pi^{-i}}(h) \\
+= \sum_{a \in \mathcal{A}, h \in \mathcal{H}} Q^i(h, a) \bar{\pi}^i (a | h) \rho^{\bar{\pi}^i}(h) \rho^{\pi^{-i}}(h) $$
+
+负熵 
+$$ \phi(\bar{\pi}^i) =  \bar{\pi}^i \log  \bar{\pi}^i $$
+
+新的优化目标：
+$$
+\bar{J}(y) = \sum_{i=1}^N \sum
+$$
+(information state $x \in \mathcal{X} = \bigcup_{i \in \{ 1, \dots, N, c\}} \mathcal{X}_i$)
+
 
 ## CFR
 
