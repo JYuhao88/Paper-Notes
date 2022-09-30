@@ -53,21 +53,34 @@ $$
 ## Policy Gradient $\to$ FoReL
 
 Policy Gradient 的优化目标 
-$$\argmax_{\bar{\pi}^i} \mathbb{E} (V^i) - \phi(\bar{\pi}^i)$$
+$$\argmax_{\bar{\pi}^i} \mathbb{E}_{h \in \mathcal{H}} (V^i) - \phi(\bar{\pi}^i)$$
 
 其中 
-$$\mathbb{E} (V^i) 
+$$\mathbb{E}_{h \in \mathcal{H}} (V^i) 
 = \sum_{a \in \mathcal{A}, h \in \mathcal{H}} Q^i(h, a) \bar{\pi}^i (a | h) \rho^{\bar{\pi}^i, \pi^{-i}}(h) \\
 = \sum_{a \in \mathcal{A}, h \in \mathcal{H}} Q^i(h, a) \bar{\pi}^i (a | h) \rho^{\bar{\pi}^i}(h) \rho^{\pi^{-i}}(h) $$
 
 负熵 
 $$ \phi(\bar{\pi}^i) =  \bar{\pi}^i \log  \bar{\pi}^i $$
 
-新的优化目标：
+### Following the Regularized Leader
+离散形式
+$$
+\pi_t = \argmax_{\pi' \in \Delta^{|\mathcal{A}|}} [\pi' \cdot y_{t-1} - \phi(\pi')], \quad y_t = y_{t-1} + \eta_t u_t,
+$$
+其中 
+注：
+$$ L = \pi' \cdot y_{t-1} - \phi(\pi') $$
+$$ \frac{\partial L}{\partial \pi'} = y_{t-1}^T - \log \pi' - |\mathcal{A}|$$
+
+连续形式
+
+
+<!-- 新的优化目标：
 $$
 \bar{J}(y) = \sum_{i=1}^N \sum
-$$
-(information state $x \in \mathcal{X} = \bigcup_{i \in \{ 1, \dots, N, c\}} \mathcal{X}_i$)
+$$ -->
+<!-- (information state $x \in \mathcal{X} = \bigcup_{i \in \{ 1, \dots, N, c\}} \mathcal{X}_i$) -->
 
 
 ## CFR
